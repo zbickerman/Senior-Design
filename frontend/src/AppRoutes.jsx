@@ -1,11 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SignIn from "./pages/SignIn";
-import StudentDashboard from "./pages/StudentDashboard";
-import ContractorDashboard from "./pages/ContractorDashboard";
-import ManagementDashboard from "./pages/ManagementDashboard";
-import "./App.css";
+import StudentDashboard from "./src/pages/StudentDashboard";
+import ContractorDashboard from "./src/pages/ContractorDashboard";
+import ManagementDashboard from "./src/pages/ManagementDashboard";
 
-function App() {
+function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
@@ -19,4 +18,4 @@ function App() {
   );
 }
 
-export default App;
+export default AppRoutes;
