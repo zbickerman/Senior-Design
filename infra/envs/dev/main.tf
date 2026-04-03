@@ -41,7 +41,7 @@ module "lambda_function" {
 
   handler  = "handler.Handler::handleRequest"
   runtime  = "java21"
-  filename = "${path.root}/../../services/workorder-processor/target/workorder_processor.jar"
+  filename = "${path.root}/../../../services/workorder-processor/target/workorder_processor.jar"
 }
 
 data "aws_iam_policy_document" "developer_passrole_policy" {
