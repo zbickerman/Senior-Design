@@ -8,7 +8,7 @@ resource "aws_lambda_function" "this" {
   filename         = var.filename
   source_code_hash = filebase64sha256(var.filename)
 
-  timeout = 12
+  timeout     = 12
   memory_size = 512
 
   environment {

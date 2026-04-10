@@ -13,6 +13,6 @@ variable "message_retention_seconds" {
 }
 
 variable "tags" {
-  type = map(string)
+  type    = map(string)
   default = {}
 }
