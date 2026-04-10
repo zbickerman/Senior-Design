@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Sidebar from '../pages/Sidebar';
 
 const StudentDashboard = () => {
   // This state controls the popup for the ticket submission
@@ -7,6 +8,7 @@ const StudentDashboard = () => {
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
       {/* 1. SIDEBAR (UNCC Green) */}
+      <Sidebar role="student" userName="User Niner" />
       <div className="w-64 bg-[#005035] text-white hidden md:flex flex-col">
         <div className="p-6 text-2xl font-bold border-b border-[#A49665]">
           PickFix
