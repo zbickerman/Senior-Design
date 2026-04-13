@@ -32,16 +32,7 @@ public class TicketController {
             @RequestParam(required = false) Long contractorId,
             @RequestParam(required = false) String status) {
 
-        if (studentId != null) {
-            return ResponseEntity.ok(ticketService.getTicketsByStudent(studentId));
-        }
-        if (contractorId != null) {
-            return ResponseEntity.ok(ticketService.getTicketsByContractor(contractorId));
-        }
-        if (status != null) {
-            return ResponseEntity.ok(ticketService.getTicketsByStatus(status));
-        }
-        return ResponseEntity.ok(ticketService.getAllTickets());
+        return ResponseEntity.ok(ticketService.getTickets(studentId, contractorId, status));
     }
 
     @GetMapping("/{id}")

@@ -1,5 +1,6 @@
 package ticketingservicesb.ticketingservicespringboot.service;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -41,25 +42,25 @@ public class TicketService {
         return ticketRepository.save(ticket);
     }
 
-    public List<Ticket> getAllTickets() {
-        return ticketRepository.findAll();
+    public List<Ticket> getTickets(Long studentId, Long contractorId, String status) {
+        Specification<Ticket> spec = Specification.where(null);
+
+        if (studentId != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("student").get("studentId"), studentId));
+        }
+        if (contractorId != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("contractor").get("id"), contractorId));
+        }
+        if (status != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+        }
+
+        return ticketRepository.findAll(spec);
     }
 
     public Ticket getTicketById(Long id) {
         return ticketRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket not found"));
-    }
-
-    public List<Ticket> getTicketsByStudent(Long studentId) {
-        return ticketRepository.findByStudentStudentId(studentId);
-    }
-
-    public List<Ticket> getTicketsByContractor(Long contractorId) {
-        return ticketRepository.findByContractorId(contractorId);
-    }
-
-    public List<Ticket> getTicketsByStatus(String status) {
-        return ticketRepository.findByStatus(status);
     }
 
     public Ticket updateTicket(Long id, Ticket updated, Long contractorId) {
