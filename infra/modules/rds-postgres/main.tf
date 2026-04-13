@@ -18,11 +18,11 @@ resource "aws_db_instance" "this" {
   db_subnet_group_name   = var.db_subnet_group_name
   vpc_security_group_ids = [var.security_group_id]
 
-  publicly_accessible   = var.publicly_accessible
-  multi_az              = false
+  publicly_accessible     = var.publicly_accessible
+  multi_az                = false
   backup_retention_period = 0
-  skip_final_snapshot   = true
-  deletion_protection   = false
+  skip_final_snapshot     = true
+  deletion_protection     = false
 
   auto_minor_version_upgrade = true
 

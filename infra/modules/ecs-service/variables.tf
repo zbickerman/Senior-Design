@@ -11,22 +11,22 @@ variable "image" {
 }
 
 variable "container_port" {
-  type = number
+  type    = number
   default = 8080
 }
 
 variable "cpu" {
-  type = string
+  type    = string
   default = "256"
 }
 
 variable "memory" {
-  type = string
+  type    = string
   default = "512"
 }
 
 variable "desired_count" {
-  type = number
+  type    = number
   default = 1
 }
 

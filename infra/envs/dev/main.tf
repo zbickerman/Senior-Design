@@ -293,9 +293,9 @@ module "rds_postgres" {
   db_subnet_group_name = module.db_subnet_group.name
   security_group_id    = module.security_groups.rds_sg_id
 
-  instance_class       = "db.t3.micro"
-  engine_version       = "16.3"
-  publicly_accessible  = false
+  instance_class      = "db.t3.micro"
+  engine_version      = "16.3"
+  publicly_accessible = false
 }
 
 module "alb" {
