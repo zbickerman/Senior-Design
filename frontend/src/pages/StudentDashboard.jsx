@@ -3,6 +3,7 @@ import Sidebar from '../pages/Sidebar'; // Verified path based on your screensho
 
 const StudentDashboard = () => {
   const [showModal, setShowModal] = useState(false);
+  const username = (localStorage.getItem("email") || "").split("@")[0] || "User";
 
   // Function to handle the form submission to your backend
   const handleTicketSubmit = async (e) => {
@@ -58,8 +59,8 @@ const StudentDashboard = () => {
             {/* Header & Stats Row */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div>
-                <h2 className="text-4xl font-black text-gray-900 tracking-tight">Good morning, User</h2>
-                <p className="text-gray-500 mt-1 font-medium">Here is your current ticket status overview.</p>
+                <h2 className="text-3xl font-extrabold text-gray-900">Good morning, {username} </h2>
+                <p className="text-gray-500 mt-1">Here is your current ticket status overview.</p>
               </div>
               
               <div className="flex gap-4">

@@ -1,9 +1,15 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "./pages/SignIn";
-import StudentDashboard from "./src/pages/StudentDashboard";
-import ContractorDashboard from "./src/pages/ContractorDashboard";
-import ManagementDashboard from "./src/pages/ManagementDashboard";
-import StudentTickets from "./src/pages/StudentTickets";
+import AuthForm from "./pages/AuthForm";
+import StudentDashboard from "./pages/StudentDashboard";
+import ContractorDashboard from "./pages/ContractorDashboard";
+import ManagementDashboard from "./pages/ManagementDashboard";
+
+const ProtectedRoute = ({ role, children }) => {
+  const storedRole = localStorage.getItem("role");
+  if (storedRole !== role) return <Navigate to="/signin" replace />;
+  return children;
+};
 
 function AppRoutes() {
   return (
