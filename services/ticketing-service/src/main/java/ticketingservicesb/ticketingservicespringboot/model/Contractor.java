@@ -3,6 +3,8 @@ package ticketingservicesb.ticketingservicespringboot.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "contractors")
 public class Contractor {
@@ -23,6 +25,7 @@ public class Contractor {
     @Column(nullable = false)
     private Boolean clockedIn = false;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "contractor", fetch = FetchType.LAZY)
     private List<Ticket> currentTickets;
 
