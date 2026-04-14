@@ -19,6 +19,7 @@ public class Contractor {
     @Column(nullable = false, unique = true)
     private String email;
 
+    private String password;
 
     @Column(nullable = false)
     private Boolean clockedIn = false;
@@ -74,5 +75,13 @@ public class Contractor {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
