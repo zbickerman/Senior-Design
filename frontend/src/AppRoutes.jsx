@@ -3,6 +3,7 @@ import SignIn from "./pages/SignIn";
 import StudentDashboard from "./src/pages/StudentDashboard";
 import ContractorDashboard from "./src/pages/ContractorDashboard";
 import ManagementDashboard from "./src/pages/ManagementDashboard";
+import StudentTickets from "./src/pages/StudentTickets";
 
 function AppRoutes() {
   return (
@@ -13,6 +14,7 @@ function AppRoutes() {
         <Route path="/student" element={<StudentDashboard />} />
         <Route path="/contractor" element={<ContractorDashboard />} />
         <Route path="/management" element={<ManagementDashboard />} />
+        <Route path="/student/tickets" element={<StudentTickets />} />
       </Routes>
     </BrowserRouter>
   );
