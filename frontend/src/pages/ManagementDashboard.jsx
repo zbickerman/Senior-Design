@@ -1,394 +1,69 @@
-import React, { useMemo, useState } from "react";
-import "./ManagementDashboard.css";
+import React from 'react';
+import Sidebar from './Sidebar';
 
-function ManagementDashboard() {
-  const [contractors, setContractors] = useState([
-    { id: 1, name: "James", location: "Smith Hall", clockedIn: true, currentTickets: 2 },
-    { id: 2, name: "Frank", location: "Fretwell", clockedIn: true, currentTickets: 1 },
-    { id: 3, name: "Ivan", location: "Smith Hall", clockedIn: false, currentTickets: 0 },
-    { id: 4, name: "Amman", location: "Woodward", clockedIn: true, currentTickets: 3 },
-    { id: 5, name: "Zach", location: "Fretwell", clockedIn: true, currentTickets: 0 },
-  ]);
-
-  const [tickets, setTickets] = useState([
-    {
-      id: 1001,
-      category: "Electrical",
-      location: "Smith Hall",
-      description: "Outlet sparks when plugging in laptop charger.",
-      urgency: "High",
-      status: "Submitted",
-      assignedContractor: null,
-      createdAt: "2026-04-05T09:00:00",
-    },
-    {
-      id: 1002,
-      category: "Plumbing",
-      location: "Fretwell",
-      description: "Sink leaking under cabinet in restroom.",
-      urgency: "Medium",
-      status: "Submitted",
-      assignedContractor: null,
-      createdAt: "2026-04-05T08:15:00",
-    },
-    {
-      id: 1003,
-      category: "HVAC",
-      location: "Woodward",
-      description: "AC not cooling classroom 204.",
-      urgency: "High",
-      status: "In Progress",
-      assignedContractor: null,
-      createdAt: "2026-04-04T16:20:00",
-    },
-    {
-      id: 1004,
-      category: "General Maintenance",
-      location: "Smith Hall",
-      description: "Broken chair in study room.",
-      urgency: "Low",
-      status: "Submitted",
-      assignedContractor: null,
-      createdAt: "2026-04-05T10:45:00",
-    },
-    {
-      id: 1005,
-      category: "Electrical",
-      location: "Fretwell",
-      description: "Hallway lights flickering on second floor.",
-      urgency: "Medium",
-      status: "Completed",
-      assignedContractor: null,
-      createdAt: "2026-04-03T13:30:00",
-    },
-  ]);
-
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [urgencyFilter, setUrgencyFilter] = useState("All");
-  const [locationFilter, setLocationFilter] = useState("All");
-  const [sortBy, setSortBy] = useState("Newest");
-  const [manualSelections, setManualSelections] = useState({});
-
-  const urgencyRank = {
-    High: 3,
-    Medium: 2,
-    Low: 1,
-  };
-
-  const locations = useMemo(() => {
-    const uniqueLocations = new Set(tickets.map((ticket) => ticket.location));
-    return ["All", ...Array.from(uniqueLocations)];
-  }, [tickets]);
-
-  const summary = useMemo(() => {
-    return {
-      submitted: tickets.filter((ticket) => ticket.status === "Submitted").length,
-      inProgress: tickets.filter((ticket) => ticket.status === "In Progress").length,
-      completed: tickets.filter((ticket) => ticket.status === "Completed").length,
-      unassigned: tickets.filter((ticket) => !ticket.assignedContractor).length,
-    };
-  }, [tickets]);
-
-  const visibleTickets = useMemo(() => {
-    let filtered = [...tickets];
-
-    if (statusFilter !== "All") {
-      filtered = filtered.filter((ticket) => ticket.status === statusFilter);
-    }
-
-    if (urgencyFilter !== "All") {
-      filtered = filtered.filter((ticket) => ticket.urgency === urgencyFilter);
-    }
-
-    if (locationFilter !== "All") {
-      filtered = filtered.filter((ticket) => ticket.location === locationFilter);
-    }
-
-    filtered.sort((a, b) => {
-      if (sortBy === "Newest") {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      }
-
-      if (sortBy === "Oldest") {
-        return new Date(a.createdAt) - new Date(b.createdAt);
-      }
-
-      if (sortBy === "Urgency") {
-        return urgencyRank[b.urgency] - urgencyRank[a.urgency];
-      }
-
-      if (sortBy === "Unassigned First") {
-        const aUnassigned = a.assignedContractor ? 1 : 0;
-        const bUnassigned = b.assignedContractor ? 1 : 0;
-        return aUnassigned - bUnassigned;
-      }
-
-      return 0;
-    });
-
-    return filtered;
-  }, [tickets, statusFilter, urgencyFilter, locationFilter, sortBy]);
-
-  function updateContractorLoad(contractorName, changeAmount) {
-    setContractors((prevContractors) =>
-      prevContractors.map((contractor) =>
-        contractor.name === contractorName
-          ? {
-              ...contractor,
-              currentTickets: Math.max(0, contractor.currentTickets + changeAmount),
-            }
-          : contractor
-      )
-    );
-  }
-
-  function assignTicket(ticketId, contractorName) {
-    const ticketToUpdate = tickets.find((ticket) => ticket.id === ticketId);
-    if (!ticketToUpdate) return;
-
-    const previousAssignee = ticketToUpdate.assignedContractor;
-
-    if (previousAssignee && previousAssignee !== contractorName) {
-      updateContractorLoad(previousAssignee, -1);
-    }
-
-    if (!previousAssignee || previousAssignee !== contractorName) {
-      updateContractorLoad(contractorName, 1);
-    }
-
-    setTickets((prevTickets) =>
-      prevTickets.map((ticket) =>
-        ticket.id === ticketId
-          ? {
-              ...ticket,
-              assignedContractor: contractorName,
-              status: ticket.status === "Submitted" ? "In Progress" : ticket.status,
-            }
-          : ticket
-      )
-    );
-  }
-
-  function autoAssignByLocation(ticket) {
-    const matchingContractors = contractors
-      .filter(
-        (contractor) =>
-          contractor.clockedIn &&
-          contractor.location === ticket.location
-      )
-      .sort((a, b) => a.currentTickets - b.currentTickets);
-
-    if (matchingContractors.length === 0) {
-      alert(`No clocked-in contractors available for ${ticket.location}.`);
-      return;
-    }
-
-    assignTicket(ticket.id, matchingContractors[0].name);
-  }
-
-  function autoAssignLeastLoaded(ticket) {
-    const availableContractors = contractors
-      .filter((contractor) => contractor.clockedIn)
-      .sort((a, b) => a.currentTickets - b.currentTickets);
-
-    if (availableContractors.length === 0) {
-      alert("No clocked-in contractors are currently available.");
-      return;
-    }
-
-    assignTicket(ticket.id, availableContractors[0].name);
-  }
-
-  function handleManualSelection(ticketId, contractorName) {
-    setManualSelections((prev) => ({
-      ...prev,
-      [ticketId]: contractorName,
-    }));
-  }
-
-  function assignManually(ticketId) {
-    const selectedContractor = manualSelections[ticketId];
-
-    if (!selectedContractor) {
-      alert("Please select a contractor first.");
-      return;
-    }
-
-    assignTicket(ticketId, selectedContractor);
-  }
-
-  function updateTicketStatus(ticketId, newStatus) {
-    setTickets((prevTickets) =>
-      prevTickets.map((ticket) =>
-        ticket.id === ticketId
-          ? { ...ticket, status: newStatus }
-          : ticket
-      )
-    );
-  }
-
-  function formatDate(dateString) {
-    return new Date(dateString).toLocaleString();
-  }
-
+const ManagementDashboard = () => {
   return (
-    <div className="management-page">
-      <header className="management-header">
-        <h1>Management Dashboard</h1>
-        <p>Review requests, filter the queue, and assign contractors.</p>
-      </header>
+    <div className="flex h-screen bg-gray-100">
+      <Sidebar role="management" userName="Admin User" />
+      <div className="w-64 bg-slate-900 text-white p-6">
+        <h2 className="text-xl font-black tracking-tighter text-[#A49665] mb-8">ADMIN CONSOLE</h2>
+        <nav className="space-y-4 text-sm font-medium">
+          <p className="text-gray-500 uppercase text-[10px] tracking-widest">Analytics</p>
+          <a href="#" className="block text-white bg-white/10 p-2 rounded">Overview</a>
+          <a href="#" className="block text-gray-400 hover:text-white">Staffing</a>
+          <a href="#" className="block text-gray-400 hover:text-white">Budgeting</a>
+        </nav>
+      </div>
 
-      <section className="summary-grid">
-        <div className="summary-card">
-          <h3>Submitted</h3>
-          <p>{summary.submitted}</p>
-        </div>
-        <div className="summary-card">
-          <h3>In Progress</h3>
-          <p>{summary.inProgress}</p>
-        </div>
-        <div className="summary-card">
-          <h3>Completed</h3>
-          <p>{summary.completed}</p>
-        </div>
-        <div className="summary-card">
-          <h3>Unassigned</h3>
-          <p>{summary.unassigned}</p>
-        </div>
-      </section>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <header className="bg-[#005035] text-white p-6 shadow-md">
+          <h1 className="text-2xl font-bold">Campus Operations Dashboard</h1>
+        </header>
 
-      <section className="controls-panel">
-        <div className="control-group">
-          <label>Status</label>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option>All</option>
-            <option>Submitted</option>
-            <option>In Progress</option>
-            <option>Completed</option>
-          </select>
-        </div>
-
-        <div className="control-group">
-          <label>Urgency</label>
-          <select value={urgencyFilter} onChange={(e) => setUrgencyFilter(e.target.value)}>
-            <option>All</option>
-            <option>High</option>
-            <option>Medium</option>
-            <option>Low</option>
-          </select>
-        </div>
-
-        <div className="control-group">
-          <label>Location</label>
-          <select value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)}>
-            {locations.map((location) => (
-              <option key={location} value={location}>
-                {location}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="control-group">
-          <label>Sort By</label>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option>Newest</option>
-            <option>Oldest</option>
-            <option>Urgency</option>
-            <option>Unassigned First</option>
-          </select>
-        </div>
-      </section>
-
-      <section className="contractor-panel">
-        <h2>Available Contractors</h2>
-        <div className="contractor-list">
-          {contractors.map((contractor) => (
-            <div key={contractor.id} className="contractor-card">
-              <h4>{contractor.name}</h4>
-              <p><strong>Location:</strong> {contractor.location}</p>
-              <p><strong>Clocked In:</strong> {contractor.clockedIn ? "Yes" : "No"}</p>
-              <p><strong>Current Tickets:</strong> {contractor.currentTickets}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="queue-section">
-        <h2>Work Order Queue</h2>
-
-        {visibleTickets.length === 0 ? (
-          <p className="empty-message">No tickets match the current filters.</p>
-        ) : (
-          <div className="ticket-list">
-            {visibleTickets.map((ticket) => (
-              <div key={ticket.id} className="ticket-card">
-                <div className="ticket-top">
-                  <div>
-                    <h3>Ticket #{ticket.id}</h3>
-                    <p className="ticket-meta">
-                      {ticket.category} • {ticket.location}
-                    </p>
-                  </div>
-                  <div className="ticket-badges">
-                    <span className={`badge urgency-${ticket.urgency.toLowerCase()}`}>
-                      {ticket.urgency}
-                    </span>
-                    <span className={`badge status-${ticket.status.toLowerCase().replace(" ", "-")}`}>
-                      {ticket.status}
-                    </span>
-                  </div>
-                </div>
-
-                <p className="ticket-description">{ticket.description}</p>
-
-                <div className="ticket-details">
-                  <p><strong>Assigned To:</strong> {ticket.assignedContractor || "Unassigned"}</p>
-                  <p><strong>Created:</strong> {formatDate(ticket.createdAt)}</p>
-                </div>
-
-                <div className="ticket-actions">
-                  <button onClick={() => autoAssignByLocation(ticket)}>
-                    Auto Assign by Location
-                  </button>
-
-                  <button onClick={() => autoAssignLeastLoaded(ticket)}>
-                    Auto Assign Least Loaded
-                  </button>
-
-                  <select
-                    value={manualSelections[ticket.id] || ""}
-                    onChange={(e) => handleManualSelection(ticket.id, e.target.value)}
-                  >
-                    <option value="">Select contractor</option>
-                    {contractors
-                      .filter((contractor) => contractor.clockedIn)
-                      .map((contractor) => (
-                        <option key={contractor.id} value={contractor.name}>
-                          {contractor.name} ({contractor.location}, {contractor.currentTickets} tickets)
-                        </option>
-                      ))}
-                  </select>
-
-                  <button onClick={() => assignManually(ticket.id)}>
-                    Assign Manually
-                  </button>
-
-                  <button onClick={() => updateTicketStatus(ticket.id, "In Progress")}>
-                    Set In Progress
-                  </button>
-
-                  <button onClick={() => updateTicketStatus(ticket.id, "Completed")}>
-                    Mark Completed
-                  </button>
-                </div>
+        <main className="p-8 space-y-8 overflow-y-auto">
+          {/* Top Level Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {[
+              { label: 'Avg. Resolution Time', val: '4.2 hrs', color: 'text-[#005035]' },
+              { label: 'Unassigned Tickets', val: '12', color: 'text-red-600' },
+              { label: 'Student Satisfaction', val: '94%', color: 'text-[#A49665]' },
+              { label: 'Budget Used', val: '62%', color: 'text-gray-700' },
+            ].map((m, i) => (
+              <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-[#A49665]">
+                <p className="text-xs font-bold text-gray-400 uppercase">{m.label}</p>
+                <p className={`text-3xl font-black mt-2 ${m.color}`}>{m.val}</p>
               </div>
             ))}
           </div>
-        )}
-      </section>
+
+          {/* Activity Table Placeholder */}
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-6 border-b flex justify-between items-center">
+              <h3 className="font-bold text-gray-800">Recent Campus Activity</h3>
+              <button className="text-xs bg-gray-100 px-3 py-1 rounded-md font-bold text-gray-600">Export CSV</button>
+            </div>
+            <table className="w-full text-left text-sm">
+              <thead className="bg-gray-50 text-gray-500 font-bold uppercase text-[10px]">
+                <tr>
+                  <th className="p-4">Ticket ID</th>
+                  <th className="p-4">Location</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4">Assigned To</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                <tr>
+                  <td className="p-4 font-mono text-[#005035]">#FIX-9021</td>
+                  <td className="p-4">Cone Center</td>
+                  <td className="p-4"><span className="bg-amber-100 text-amber-700 px-2 py-1 rounded text-[10px] font-bold">PENDING</span></td>
+                  <td className="p-4 text-gray-500">Crew #402</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </main>
+      </div>
     </div>
   );
-}
-
+};
 export default ManagementDashboard;

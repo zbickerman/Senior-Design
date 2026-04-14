@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Sidebar from '../pages/Sidebar';
 
 const StudentDashboard = () => {
   // This state controls the popup for the ticket submission
@@ -7,6 +8,7 @@ const StudentDashboard = () => {
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
       {/* 1. SIDEBAR (UNCC Green) */}
+      <Sidebar role="student" userName="User Niner" />
       <div className="w-64 bg-[#005035] text-white hidden md:flex flex-col">
         <div className="p-6 text-2xl font-bold border-b border-[#A49665]">
           PickFix
@@ -86,7 +88,7 @@ const StudentDashboard = () => {
             {/* LARGE RED BUTTON SECTION */}
             <section className="bg-[#005035] rounded-3xl p-10 text-center shadow-2xl relative overflow-hidden">
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#A49665] opacity-10 rounded-full"></div>
-              <h3 className="text-2xl font-bold text-white mb-3">Found a problem on campus?</h3>
+              <h3 className="text-2xl font-bold text-white mb-3">SUBMIT ISSUES</h3>
               <p className="text-green-100 mb-8 max-w-md mx-auto">Click below to submit a ticket with photos. Our maintenance team will be notified immediately.</p>
               
               <button 
