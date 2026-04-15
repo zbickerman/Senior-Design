@@ -60,15 +60,6 @@ const ContractorDashboard = () => {
     <div className="flex h-screen bg-gray-50">
       <Sidebar role="contractor" userName={username} />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white border-b p-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-[#005035]">
-            {username} — Field Portal
-          </h1>
-          <span className="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full">
-            ON DUTY
-          </span>
-        </header>
 
         <main className="flex-1 overflow-y-auto p-6 space-y-6">
           {loading ? (
@@ -185,7 +176,6 @@ const ContractorDashboard = () => {
           )}
         </main>
       </div>
-    </div>
   );
 };
 
