@@ -40,6 +40,7 @@ const AuthForm = () => {
       //   email,
       // };
       // localStorage.removeItem("token");
+      if (data.token) localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
       localStorage.setItem("userId", String(data.id));
       localStorage.setItem("email", data.email);
